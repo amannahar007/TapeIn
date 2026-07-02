@@ -32,7 +32,8 @@ const initialStudents = studentNames.map((name, index) => ({
   id: `STU${String(index + 1).padStart(3, '0')}`,
   name: name,
   status: Math.random() > 0.8 ? 'present' : 'absent',
-  time: Math.random() > 0.8 ? '08:' + Math.floor(Math.random() * 60).toString().padStart(2, '0') + ' AM' : '-'
+  checkinTime: Math.random() > 0.8 ? '08:' + Math.floor(Math.random() * 60).toString().padStart(2, '0') + ' AM' : '-',
+  checkoutTime: Math.random() > 0.9 ? '03:' + Math.floor(Math.random() * 60).toString().padStart(2, '0') + ' PM' : '-'
 }));
 
 export default function App() {
@@ -110,6 +111,7 @@ export default function App() {
                 <th>Name</th>
                 <th>Status</th>
                 <th>Check-in Time</th>
+                <th>Check-out Time</th>
               </tr>
             </thead>
             <tbody>
@@ -118,7 +120,8 @@ export default function App() {
                   <td>{s.id}</td>
                   <td style={{ fontWeight: 500 }}>{s.name}</td>
                   <td><span className={`status-badge ${s.status}`}>{s.status.toUpperCase()}</span></td>
-                  <td>{s.time}</td>
+                  <td>{s.checkinTime}</td>
+                  <td>{s.checkoutTime}</td>
                 </tr>
               ))}
             </tbody>
@@ -132,6 +135,7 @@ export default function App() {
     const videoRef = useRef(null);
     const [scanResult, setScanResult] = useState(null);
     const [qrScanner, setQrScanner] = useState(null);
+    const [logMode, setLogMode] = useState('in'); // 'in' or 'out'
 
     // Stop all video streams when unmounting or changing views
     const stopCamera = () => {
@@ -198,6 +202,11 @@ export default function App() {
                 <ArrowLeft size={16} /> Back
              </button>
              <h2 style={{ fontSize: '1.5rem' }}>Select Logging Method</h2>
+          </div>
+          
+          <div style={{ marginBottom: '24px', display: 'flex', gap: '12px' }}>
+             <button className={`btn ${logMode === 'in' ? 'btn-success' : 'btn-outline'}`} onClick={() => setLogMode('in')}>Log Check-In</button>
+             <button className={`btn ${logMode === 'out' ? 'btn-success' : 'btn-outline'}`} onClick={() => setLogMode('out')}>Log Check-Out</button>
           </div>
           
           <div className="action-grid" style={{ maxWidth: '800px' }}>
@@ -268,7 +277,7 @@ export default function App() {
               
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--surface-border)', paddingTop: '12px', marginTop: '12px' }}>
                  <div>
-                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Time</p>
+                   <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{logMode === 'in' ? 'Check-in Time' : 'Check-out Time'}</p>
                    <p style={{ fontWeight: 500 }}>{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                  </div>
                  <div style={{ textAlign: 'right' }}>
@@ -328,6 +337,7 @@ export default function App() {
                   <th>Student ID</th>
                   <th>Today's Status</th>
                   <th>Check-in Time</th>
+                  <th>Check-out Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -337,12 +347,13 @@ export default function App() {
                     <td style={{ fontWeight: '500' }}>{s.name}</td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{s.id}</td>
                     <td><span className={`status-badge ${s.status}`}>{s.status.toUpperCase()}</span></td>
-                    <td style={{ color: 'var(--text-muted)' }}>{s.time}</td>
+                    <td style={{ color: 'var(--text-muted)' }}>{s.checkinTime}</td>
+                    <td style={{ color: 'var(--text-muted)' }}>{s.checkoutTime}</td>
                   </tr>
                 ))}
                 {filteredStudents.length === 0 && (
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>No students found matching "{search}"</td>
+                    <td colSpan="6" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>No students found matching "{search}"</td>
                   </tr>
                 )}
               </tbody>
